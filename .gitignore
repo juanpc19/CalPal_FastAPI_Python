@@ -1,3 +1,9 @@
 venv/
 .env
 notas proyecto.txt
+__pycache__/
+config/__pycache__/
+models/__pycache__/
+routes/__pycache__/
+serializers/__pycache__/
+utils/__pycache__/
