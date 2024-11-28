@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class ComidaRegistroModel(BaseModel):
-    id_comida: str
+    id_comida: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     id_reg: str
     idOrden: int
     nombre: str
@@ -9,4 +9,6 @@ class ComidaRegistroModel(BaseModel):
     proteinas: float
     carbohidratos: float
     grasas: float
-    info_adicional: str
+    
+    class Config: 
+        populate_by_name = True

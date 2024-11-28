@@ -1,0 +1,12 @@
+# API
+fastapi
+pydantic
+uvicorn
+
+#Database
+motor[srv]
+
+# Dependencias de desarrollo
+pip-tools
+python-dotenv
+pytest

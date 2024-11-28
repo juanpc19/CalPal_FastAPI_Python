@@ -1,6 +1,7 @@
 .venv/
 .env
 notas proyecto.txt
+notas git.txt
 __pycache__/
 config/__pycache__/
 models/__pycache__/
