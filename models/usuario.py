@@ -21,9 +21,9 @@ class UsuarioModel(BaseModel):
         json_schema_extra = {
             "example": {
                 "id_usuario": "d12312da8da",
+                "hashed_password": "hashed_password",
                 "email": "example@example.com",
                 "email_verificado": False,
-                "hashed_password": "hashed_password",
                 "objetivos": {"calorias": 2500, "proteinas": 150.0, "carbohidratos": 200.0, "grasas": 100.0},
                 "comidas": {"Desayuno": 1, "Almuerzo": 2, "Cena": 3},
                 "sexo": "Masculino",
@@ -34,7 +34,7 @@ class UsuarioModel(BaseModel):
             }
         }
 
-#modelo para insercion inicial (id dada por mongodb)
+#modelo para insercion inicial (id dada por mongodb), campos opcionales actuaran como default aqui en lugar de la app
 class PostUsuarioModel(BaseModel):
     hashed_password: str
     email: str
@@ -50,9 +50,9 @@ class PostUsuarioModel(BaseModel):
     class Config: 
         json_schema_extra = {
             "example": {
-                "email": "example@example.com",
-                "email_verificado": False,
                 "hashed_password": "pasS123.",
+                "email": "juanpesca19@gmail.com",
+                "email_verificado": False,
                 "objetivos": {"calorias": 2500, "proteinas": 150.0, "carbohidratos": 200.0, "grasas": 100.0},
                 "comidas": {"Desayuno": 1, "Almuerzo": 2, "Cena": 3},
                 "sexo": "Masculino",
@@ -66,8 +66,6 @@ class PostUsuarioModel(BaseModel):
         
 #modelo para updates
 class UpdateUsuarioModel(BaseModel):
-    email_verificado: bool = None
-    hashed_password: Optional[str] = None
     objetivos: Optional[Dict[str, float]] = None
     comidas: Optional[Dict[str, int]] = None
     sexo: Optional[str] = None
@@ -79,8 +77,6 @@ class UpdateUsuarioModel(BaseModel):
     class Config: 
         json_schema_extra = {
             "example": {
-                "email_verificado": False,
-                "hashed_password": "hashed_password",
                 "objetivos": {"calorias": 2500, "proteinas": 150.0, "carbohidratos": 200.0, "grasas": 100.0},
                 "comidas": {"Desayuno": 1, "Almuerzo": 2, "Cena": 3},
                 "sexo": "Masculino",

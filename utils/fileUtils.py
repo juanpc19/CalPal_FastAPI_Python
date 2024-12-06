@@ -35,7 +35,7 @@ def hash_password(password: str) -> str:
     hashed_password=bcrypt.hashpw(password,salt)
     return hashed_password.decode('utf-8')
           
-#funcion para verificar contraseña descodificando el hash, devuelve true si coninciden
+#funcion para verificar contraseña descodificando el hash, devuelve true si coinciden
 def verify_password(password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
@@ -57,25 +57,26 @@ def crear_token(id_usu: str, horas_expiracion: int) -> TokenBasicModel:
 
     return token
 
-# Funcion para crear token de verificación de nuevo usuario (expiración de 24 horas)
+# Funcion para crear token de verificación de nuevo usuario o restablecer contraseña (expiración de 1 hora)
 def crear_token_verificacion(id_usu: str) -> TokenBasicModel:
     return crear_token(id_usu, 1)
 
-# Funcion para crear token de verificación de usuario existente (expiración de 5 horas)
+# Funcion para crear token de verificación de usuario existente (expiración de 6 horas)
 def crear_token_inicio_sesion(id_usu: str) -> TokenBasicModel:
-    return crear_token(id_usu, 5)
+    return crear_token(id_usu, 6)
 
-# funcion que extrae el token JWT del Authorization del encabezado 
-async def extraer_token_header(authorization: str = Header(...)):
-    
+# funcion que extrae el token del Authorization del encabezado 
+async def extraer_token_header_authorization(authorization: str = Header(...)):
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=400, detail="Formato de token inválido.")
-    return authorization.split(" ")[1]
-
-#funcion para enviar email de verificacion
-def enviar_email_verificacion(email: str, token: TokenModel):
     
-    enlace_verificacion = f"http://127.0.0.1:8000/usuarios/verificar?token={token.token_jwt}"   
+    token=authorization.split(" ")[1]
+    return token
+
+#funcion para enviar email de verificacion, redirigira a app mediante implementacion de deep link
+def enviar_email_verificacion(email: str, token_jwt: str):
+    
+    enlace_verificacion = f"http://127.0.0.1:8000/usuarios/verificacion?token={token_jwt}"#cambiar cuando suba API a servicio en nube   
     
     message = Mail(
         from_email="calpalfit@gmail.com", 
@@ -93,3 +94,27 @@ def enviar_email_verificacion(email: str, token: TokenModel):
         sg_api_key.send(message)
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
+        
+        
+#funcion para enviar link de cambio de contraseña, redirigira a app mediante implementacion de deep link
+def enviar_email_cambiar_contrasena(email:str, token_jwt: str):
+    
+    enlace_cambio_pass = f"http://127.0.0.1:8000/usuarios/reinicio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
+    
+    message = Mail(
+        from_email="calpalfit@gmail.com", 
+        to_emails=email,
+        subject="Cambio de contraseña",
+        html_content=f"""
+            <p>Haz clic en el siguiente enlace para confirmar tu identidad y te redigiremos a la app para cambiar tu contraseña:</p>
+            <p><a href='{enlace_cambio_pass}'>Cambiar contraseña</a></p>
+            <p>Este enlace estará disponible durante 1 hora.</p>
+        """
+    )
+    
+    try:
+        sg_api_key = SendGridAPIClient(SENDGRID_API_KEY)   
+        sg_api_key.send(message)
+    except Exception as e:
+        print(f"Error al enviar el correo: {e}")
+    
