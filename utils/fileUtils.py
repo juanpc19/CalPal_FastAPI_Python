@@ -7,7 +7,7 @@ import jwt
 import bcrypt
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from models.token import TokenBasicModel, TokenModel
+from models.token import TokenBasicModel
 
 load_dotenv()
 SECRET_KEY=os.getenv("SECRET_KEY")
@@ -40,9 +40,9 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 # Funcion generalizada para crear un token con tiempo de expiración personalizado y devolverlo junto a un id usuario en un token model
-def crear_token(id_usu: str, horas_expiracion: int) -> TokenBasicModel:
+def crear_token(id_usu: str, minutos_expiracion: int) -> TokenBasicModel:
     fecha_creacion = datetime.now(timezone.utc)
-    fecha_expiracion = fecha_creacion + timedelta(hours=horas_expiracion)
+    fecha_expiracion = fecha_creacion + timedelta(minutes=minutos_expiracion)
     payload = {
         "sub": id_usu,  
         "iat": fecha_creacion,  
@@ -57,16 +57,16 @@ def crear_token(id_usu: str, horas_expiracion: int) -> TokenBasicModel:
 
     return token
 
-# Funcion para crear token de verificación de nuevo usuario o restablecer contraseña (expiración de 1 hora)
+# Funcion para crear token de verificación de nuevo usuario o restablecer contraseña (expiración de 15 minutos)
 def crear_token_verificacion(id_usu: str) -> TokenBasicModel:
-    return crear_token(id_usu, 1)
+    return crear_token(id_usu, 15)
 
-# Funcion para crear token de verificación de usuario existente (expiración de 6 horas)
+# Funcion para crear token de inicio de sesion de usuario existente (expiración de 120 minutos)
 def crear_token_inicio_sesion(id_usu: str) -> TokenBasicModel:
-    return crear_token(id_usu, 6)
+    return crear_token(id_usu, 120)
 
-# funcion que extrae el token del Authorization del encabezado 
-async def extraer_token_header_authorization(authorization: str = Header(...)):
+# funcion que extrae el token del Authorization del header 
+def extraer_token_header_authorization(authorization: str = Header(...)):
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=400, detail="Formato de token inválido.")
     
@@ -99,7 +99,7 @@ def enviar_email_verificacion(email: str, token_jwt: str):
 #funcion para enviar link de cambio de contraseña, redirigira a app mediante implementacion de deep link
 def enviar_email_cambiar_contrasena(email:str, token_jwt: str):
     
-    enlace_cambio_pass = f"http://127.0.0.1:8000/usuarios/reinicio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
+    enlace_cambio_pass = f"http://127.0.0.1:8000/usuarios/redireccion-cambio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
     
     message = Mail(
         from_email="calpalfit@gmail.com", 

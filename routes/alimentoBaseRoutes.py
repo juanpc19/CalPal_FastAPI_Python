@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, status
 from models.alimentoBase import AlimentoBaseModel
 from serializers.alimentoBase import serializar_alimentos_base, serializar_alimento_base
 from bson import ObjectId
@@ -25,6 +25,6 @@ async def alimento_base_seleccionado(_id: str, request: Request):
         alimento_base = serializar_alimento_base(respuesta)
         return alimento_base   
     
-    raise HTTPException(status_code=404, detail="Alimento no encontrado")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alimento no encontrado")
 
    
