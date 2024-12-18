@@ -85,7 +85,7 @@ def enviar_email_verificacion(email: str, token_jwt: str):
         html_content=f"""
             <p>Haz clic en el siguiente enlace para verificar tu correo:</p>
             <p><a href='{enlace_verificacion}'>Verificar correo</a></p>
-            <p>Este enlace estará disponible durante 1 hora.</p>
+            <p>Este enlace estará disponible durante 30 minutos.</p>
         """
     )
     
@@ -108,7 +108,7 @@ def enviar_email_cambiar_contrasena(email:str, token_jwt: str):
         html_content=f"""
             <p>Haz clic en el siguiente enlace para confirmar tu identidad y te redigiremos a la app para cambiar tu contraseña:</p>
             <p><a href='{enlace_cambio_pass}'>Cambiar contraseña</a></p>
-            <p>Este enlace estará disponible durante 1 hora.</p>
+            <p>Este enlace estará disponible durante 30 minutos.</p>
         """
     )
     

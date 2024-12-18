@@ -35,13 +35,13 @@ async def comprobar_email_existente(data: dict, request: Request):
 @usuarios_root.post("/usuarios/registro", response_model=dict, response_description="Registra al usuario")
 async def registrar_usuario(usuario: PostUsuarioModel, request: Request):
 #paso a formato json el usuario y hago hash a su pass antes de insertarlo en bbdd
-    usuario=jsonable_encoder(usuario)
-    password=usuario["hashed_password"]
+    usuario_json=jsonable_encoder(usuario)
+    password=usuario_json["hashed_password"]
     nueva_password=hash_password(password)
-    usuario["hashed_password"]=nueva_password
+    usuario_json["hashed_password"]=nueva_password
     
     #inserto documento usuario en su coleccion y obtengo la referencia del documento recien creado
-    ref_nuevo_usuario = await request.app.mongodb["usuarios"].insert_one(usuario)
+    ref_nuevo_usuario = await request.app.mongodb["usuarios"].insert_one(usuario_json)
     usuario_registrado = await request.app.mongodb["usuarios"].find_one({"_id": ref_nuevo_usuario.inserted_id})
     
     id_usu = str(ref_nuevo_usuario.inserted_id)
@@ -94,7 +94,7 @@ async def verificar_usuario(request: Request, token: str = Query(..., descriptio
     if not resultado_delete:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido o ya eliminado.")
 
-    nuevo_token=crear_token_inicio_sesion(id_usuario)
+    nuevo_token=crear_token_verificacion(id_usuario)
     nuevo_token_json=jsonable_encoder(nuevo_token)
     ref_nuevo_token = await request.app.mongodb["tokens"].insert_one(nuevo_token_json)
     token_insertado = await request.app.mongodb["tokens"].find_one({"_id": ref_nuevo_token.inserted_id})
@@ -143,7 +143,7 @@ async def crear_nueva_sesion(data: dict, request: Request):
     if not verify_password(password, hash_pass_cadena):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Contraseña incorrecta")
     
-    resultado_delete = await request.app.mongodb["tokens"].find_one_and_delete({"id_usu": usuario_serializado.id_usuario})
+    resultado_delete = await request.app.mongodb["tokens"].delete_many({"id_usu": usuario_serializado.id_usuario})
     if not resultado_delete:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido o ya eliminado.")
 
