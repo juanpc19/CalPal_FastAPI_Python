@@ -87,18 +87,13 @@ class UpdateUsuarioModel(BaseModel):
             }
         }
 
-#modelo para usar en content de JSONResponse al registrar usuario        
-class UsuarioRegistroResponseModel(BaseModel):
-    usuario: UsuarioModel
-    token: TokenModel
+class UsuarioObjetivosComidasModel(BaseModel):
+    objetivos: Dict[str, float]
+    comidas: Dict[str, int]
     
     class Config: 
         json_schema_extra = {
             "usuario": {
-                "id_usuario": "67277c51ae7c0124f4494dbb",
-                "hashed_password": "$2b$12$YzhHDpaU0syeubGQIMLyQuVe3zoa.zp1H3AniVAyAKvnCf1HDDBC.",
-                "email": "example@example.com",
-                "email_verificado": False,
                 "objetivos": {
                     "calorias": 2500.0,
                     "proteinas": 150.0,
@@ -110,16 +105,25 @@ class UsuarioRegistroResponseModel(BaseModel):
                     "Almuerzo": 2,
                     "Cena": 3
                 },
+        
+            }
+        }
+   
+class UsuarioDatosModel(BaseModel):
+    sexo: str
+    altura: int
+    peso: float
+    edad: int
+    nivel_actividad: int
+    
+    class Config: 
+        json_schema_extra = {
+            "usuario": {
                 "sexo": "Masculino",
                 "altura": 175,
                 "peso": 75.5,
                 "edad": 30,
                 "nivel_actividad": 1
-            },
-            "token": {
-                "id_token": "d12312da8da",
-                "id_usu": "67277c51ae7c0124f4494dbb",
-                "token_jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NzI3N2M1MWFlN2MwMTI0ZjQ0OTRkYmIiLCJpYXQiOjE3MzA2NDA5NzcsImV4cCI6MTczMDcyNzM3N30.Vais0nOw2JjEyf2Vzs17Lrykb5QhCV34Zod-CcnNMgY"
             }
         }
-        
+   

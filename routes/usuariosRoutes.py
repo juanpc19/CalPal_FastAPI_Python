@@ -5,8 +5,8 @@ from fastapi import APIRouter, Header, Query, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import jwt
-from models.usuario import UsuarioModel, PostUsuarioModel, UpdateUsuarioModel
-from serializers.usuario import serializar_usuario
+from models.usuario import UsuarioModel, PostUsuarioModel, UpdateUsuarioModel, UsuarioObjetivosComidasModel, UsuarioDatosModel
+from serializers.usuario import serializar_usuario, serializar_usuario_objetivos_comidas, serializar_usuario_datos
 from serializers.token import serializar_token
 from utils.fileUtils import crear_token_verificacion, crear_token_inicio_sesion, enviar_email_verificacion, enviar_email_cambiar_contrasena, hash_password, verify_password, extraer_token_header_authorization
 
@@ -94,7 +94,7 @@ async def verificar_usuario(request: Request, token: str = Query(..., descriptio
     if not resultado_delete:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido o ya eliminado.")
 
-    nuevo_token=crear_token_verificacion(id_usuario)
+    nuevo_token=crear_token_inicio_sesion(id_usuario)
     nuevo_token_json=jsonable_encoder(nuevo_token)
     ref_nuevo_token = await request.app.mongodb["tokens"].insert_one(nuevo_token_json)
     token_insertado = await request.app.mongodb["tokens"].find_one({"_id": ref_nuevo_token.inserted_id})
@@ -278,7 +278,7 @@ async def establecer_nueva_contrasena(data: dict, request: Request):
     return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "contraseña cambiada con exito"})
 
 #endpoint que devolvera los datos del usuario asociado al token recibido
-@usuarios_root.get("/usuarios/perfil", response_model=UsuarioModel, response_description="Obtiene los datos del perfil usuario")
+@usuarios_root.get("/usuarios/perfil-completo", response_model=UsuarioModel, response_description="Obtiene los datos del perfil usuario")
 async def obtener_datos_usuario(request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
@@ -295,6 +295,48 @@ async def obtener_datos_usuario(request: Request, authorization: str = Header(..
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado.")
     
     usuario_serializado=serializar_usuario(usuario)
+    
+    return usuario_serializado
+
+#endpoint que devolvera los datos del usuario asociado al token recibido
+@usuarios_root.get("/usuarios/perfil-objetivos-comidas", response_model=UsuarioObjetivosComidasModel, response_description="Obtiene los datos del perfil usuario")
+async def obtener_datos_usuario(request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    try:
+        token=extraer_token_header_authorization(authorization)
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        id_usuario = payload["sub"]#extraigo el id del usuario del token    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+
+    usuario = await request.app.mongodb["usuarios"].find_one({"_id":ObjectId(id_usuario)})
+    
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado.")
+    
+    usuario_serializado=serializar_usuario_objetivos_comidas(usuario)
+    
+    return usuario_serializado
+
+#endpoint que devolvera los datos del usuario asociado al token recibido
+@usuarios_root.get("/usuarios/perfil-datos", response_model=UsuarioDatosModel, response_description="Obtiene los datos del perfil usuario")
+async def obtener_datos_usuario(request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    try:
+        token=extraer_token_header_authorization(authorization)
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        id_usuario = payload["sub"]#extraigo el id del usuario del token    
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+
+    usuario = await request.app.mongodb["usuarios"].find_one({"_id":ObjectId(id_usuario)})
+    
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado.")
+    
+    usuario_serializado=serializar_usuario_datos(usuario)
     
     return usuario_serializado
 
