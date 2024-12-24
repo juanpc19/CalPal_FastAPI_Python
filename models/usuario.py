@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Optional #para definir tipo de lista, util en model validation con pydantic
-from models.token import TokenModel
 
 #modelo para lectura como get
 class UsuarioModel(BaseModel):

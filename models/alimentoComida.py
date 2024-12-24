@@ -28,3 +28,29 @@ class AlimentoComidaModel(BaseModel):
                 "info_adicional": "Proporciona energía rápida, mejora la digestión y ayuda a regular la presión arterial. Rico en potasio, vitamina B6, vitamina C y fibra."
             }
         }
+        
+class PostAlimentoComidaModel(BaseModel):
+    id_com: str
+    nombre: str
+    tipo: str 
+    cantidad_gramos: int
+    calorias: float
+    proteinas: float
+    carbohidratos: float
+    grasas: float
+    info_adicional: str
+    
+    class Config: 
+        json_schema_extra = {
+            "example": {
+                "id_com": "1abc45452sf57...",  
+                "nombre": "Plátano",
+                "tipo": "Fruta",
+                "cantidad_gramos": 100,
+                "calorias": 89.0,
+                "proteinas": 1.1,
+                "carbohidratos": 22.8,
+                "grasas": 0.3,
+                "info_adicional": "Proporciona energía rápida, mejora la digestión y ayuda a regular la presión arterial. Rico en potasio, vitamina B6, vitamina C y fibra."
+            }
+        }
