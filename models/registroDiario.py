@@ -1,7 +1,8 @@
 from datetime import date
 from typing import List
 from pydantic import BaseModel, Field
-from models.comidaRegistro import ComidaRegistroModel
+from models.comidaRegistro import ComidaRegistroModel, ComidaConAlimentosModel
+from models.alimentoComida import AlimentoComidaModel
 
 class RegistroDiarioModel(BaseModel):
     id_registro: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
@@ -69,41 +70,67 @@ class UpdateRegistroDiarioModel(BaseModel):
                 "grasas": 69.3
             }
         }
+ 
         
-class RegistroDiarioComidasModel(BaseModel):
-    registro: RegistroDiarioModel
-    comidas: List[ComidaRegistroModel]
+class RegistroConComidasConAlimentosModel(BaseModel):
+    id_registro: str = Field(alias="_id")  # Identificador único del registro
+    id_usu: str
+    fecha: date
+    peso: float
+    calorias: float
+    proteinas: float
+    carbohidratos: float
+    grasas: float
+    comidas: List[ComidaConAlimentosModel]  # Lista de comidas relacionadas con el registro
     
-    class Config: 
+    class Config:
+        populate_by_name = True
         json_schema_extra = {
             "example": {
-                "registro": {
-                    "_id": "reg123",
-                    "id_usu": "user456",
-                    "fecha": "2024-12-24",   
-                    "peso": 70.5,
-                    "calorias": 2200,
-                    "proteinas": 150,
-                    "carbohidratos": 250,
-                    "grasas": 70
-                },
+                "id_registro": "reg123",
+                "id_usu": "user456",
+                "fecha": "2024-12-24",
+                "peso": 70.5,
+                "calorias": 2200,
+                "proteinas": 150,
+                "carbohidratos": 250,
+                "grasas": 70,
                 "comidas": [
                     {
-                        "_id": "com123",
+                        "id_comida": "1abc45452sf57...",
+                        "orden": 1,
                         "nombre": "Desayuno",
-                        "calorias": 500,
-                        "proteinas": 30,
-                        "carbohidratos": 50,
-                        "grasas": 15
-                    },
-                    {
-                        "_id": "com124",
-                        "nombre": "Cena",
-                        "calorias": 700,
-                        "proteinas": 40,
-                        "carbohidratos": 60,
-                        "grasas": 25
+                        "calorias": 349.0,
+                        "proteinas": 36.1,
+                        "carbohidratos": 220.8,
+                        "grasas": 6.3,
+                        "alimentos": [
+                            {
+                                "id_alimento": "6710f557...",
+                                "nombre": "Plátano",
+                                "tipo": "Fruta",
+                                "cantidad_gramos": 100,
+                                "calorias": 89.0,
+                                "proteinas": 1.1,
+                                "carbohidratos": 22.8,
+                                "grasas": 0.3,
+                                "info_adicional": "Proporciona energía rápida..."
+                            },
+                            {
+                                "id_alimento": "6720f558...",
+                                "nombre": "Huevo",
+                                "tipo": "Proteína",
+                                "cantidad_gramos": 50,
+                                "calorias": 70.0,
+                                "proteinas": 6.3,
+                                "carbohidratos": 0.6,
+                                "grasas": 5.0,
+                                "info_adicional": "Rico en proteínas, vitamina D y colina..."
+                            }
+                        ]
                     }
                 ]
             }
         }
+        
+               

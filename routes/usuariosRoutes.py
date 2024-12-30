@@ -227,26 +227,27 @@ async def redirigir_cambio_contrasena(request: Request, token: str = Query(..., 
     try:
         # Verifico y decodifico el token
         jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-
-        token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
-        
-        if not token_encontrado:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
-        
-        # Generar un deep link para la app
-        deep_link = f"myapp://nueva-contrasena?token={token}"
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "deep_link": deep_link
-            }
-        )
-        
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
+    
+    # Generar un deep link para la app
+    deep_link = f"myapp://nueva-contrasena?token={token}"
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "deep_link": deep_link
+        }
+    )
+        
+   
 
 #endpoint que cambiara la contraseña del usuario
 @usuarios_root.patch("/usuarios/nueva-contrasena", response_model=dict, response_description="Cambia la contraseña del usuario")
