@@ -56,7 +56,7 @@ async def obtener_alimentos_usuario(request: Request, authorization: str = Heade
     alimentos_usuario_serializados = serializar_alimentos_usuario(alimentos_usuario)
     
     return alimentos_usuario_serializados
-# 6763f6a7ced33d945ade42ee
+
 @alimentos_usuario_root.get("/alimentos-usuarios/{_id}", response_model=AlimentoUsuarioModel, response_description="Obtiene alimento de usuario seleccionado")
 async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
