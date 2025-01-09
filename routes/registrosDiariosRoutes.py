@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from bson import ObjectId
 from dotenv import load_dotenv
@@ -6,10 +7,11 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import jwt
 from utils.fileUtils import extraer_token_header_authorization
-from models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, UpdateRegistroDiarioModel
+from models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, UpdateRegistroDiarioModel, RegistroConComidasConAlimentosModel
 from models.usuario import UsuarioObjetivosComidasModel
 from models.comidaRegistro import PostComidaRegistroModel
 from models.alimentoComida import AlimentoComidaModel, PostAlimentoComidaModel
+from serializers.registroDiario import serializar_registro_completo
 
 registros_diarios_root=APIRouter()
 load_dotenv()
@@ -81,6 +83,46 @@ async def actualizar_peso_registro_diario(id_registro: str, data: dict, request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontró el registro para actualizar.")
 
     return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "Peso actualizado correctamente"})
+
+@registros_diarios_root.get("/registros-diarios/{id_registro}", response_model=RegistroConComidasConAlimentosModel, response_description="Obtiene un registro con sus comidas asociadas y los alimentos asociados a las comidas")
+async def obtener_registro_completo(id_registro: str, request: Request, authorization: str = Header(..., description="Token JWT de verificacion")):
+    token=extraer_token_header_authorization(authorization)
+    try:
+        payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
+    
+    id_usuario=payload["sub"]
+    fecha_actual = datetime.now().date()
+    
+    fecha_actual_string=str(fecha_actual)
+    id_registro=ObjectId(id_registro)
+    #registro=await request.app.mongodb["registros_diarios"].find_one({"_id": id_registro})
+    registro = await request.app.mongodb["registros_diarios"].find_one({"id_usu": id_usuario, "fecha": fecha_actual_string})
+    
+    if not registro:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Registro no encontrado para la fecha actual.")
+    
+    comidas=await request.app.mongodb["comidas_registro"].find({"id_reg": str(id_registro)}).to_list()
+    
+    comida_object_ids = [comida["_id"] for comida in comidas]#para consulta unica almaceno todos los ids en una lista
+    alimentos = await request.app.mongodb["alimentos_comida"].find({"id_com": {"$in": [str(_id) for _id in comida_object_ids]}}).to_list()
+    
+    alimentos_por_comida = {}#guardara la relacion entre comida y sus alimentos (k,v) para facilitar serializacion
+    
+    for alimento in alimentos:
+        alimentos_por_comida.setdefault(alimento["id_com"], []).append(alimento)
+
+    registro_completo_model=serializar_registro_completo(registro,comidas,alimentos_por_comida)
+    
+    return registro_completo_model
     
 #endpoint que añade un alimento y actualiza valores en cascada en comidas y registro
 @registros_diarios_root.patch("/registros-diarios/{id_registro}/comidas/{id_comida}/alimentos", response_model=dict, response_description="Inserta nuevo alimento actualiza datos de comidas y registro")

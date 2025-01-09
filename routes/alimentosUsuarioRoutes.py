@@ -15,7 +15,7 @@ load_dotenv()
 SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM=os.getenv("ALGORITHM")
 
-@alimentos_usuario_root.post("/alimentos-usuarios", response_model=dict, response_description="Añade un nuevo alimento de usuario")
+@alimentos_usuario_root.post("/alimentos-usuario", response_model=dict, response_description="Añade un nuevo alimento de usuario")
 async def insertar_nuevo_alimento(alimento_usuario: PostAlimentoUsuarioModel, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
@@ -35,7 +35,7 @@ async def insertar_nuevo_alimento(alimento_usuario: PostAlimentoUsuarioModel, re
      
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"mensaje": "Alimento insertado correctamente."})
 
-@alimentos_usuario_root.get("/alimentos-usuarios", response_model=List[AlimentoUsuarioModel], response_description="Obtiene todos los alimentos del usuario")
+@alimentos_usuario_root.get("/alimentos-usuario", response_model=List[AlimentoUsuarioModel], response_description="Obtiene todos los alimentos del usuario")
 async def obtener_alimentos_usuario(request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
@@ -57,7 +57,7 @@ async def obtener_alimentos_usuario(request: Request, authorization: str = Heade
     
     return alimentos_usuario_serializados
 
-@alimentos_usuario_root.get("/alimentos-usuarios/{_id}", response_model=AlimentoUsuarioModel, response_description="Obtiene alimento de usuario seleccionado")
+@alimentos_usuario_root.get("/alimentos-usuario/{_id}", response_model=AlimentoUsuarioModel, response_description="Obtiene alimento de usuario seleccionado")
 async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
@@ -79,7 +79,7 @@ async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorizat
     
     return alimento_usuario_serializado
 
-@alimentos_usuario_root.patch("/alimentos-usuarios/{_id}", response_model=dict, response_description="modifica alimento de usuario seleccionado")
+@alimentos_usuario_root.patch("/alimentos-usuario/{_id}", response_model=dict, response_description="modifica alimento de usuario seleccionado")
 async def modificar_alimento_usuario(_id: str, alimento_usuario: UpdateAlimentoUsuarioModel, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
@@ -106,7 +106,7 @@ async def modificar_alimento_usuario(_id: str, alimento_usuario: UpdateAlimentoU
     return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "Alimento actualizado correctamente"})
     
      
-@alimentos_usuario_root.delete("/alimentos-usuarios/{_id}", response_model=dict, response_description="Elimina alimento de usuario seleccionado")
+@alimentos_usuario_root.delete("/alimentos-usuario/{_id}", response_model=dict, response_description="Elimina alimento de usuario seleccionado")
 async def eliminar_alimento_usuario(_id: str, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     try:
         token=extraer_token_header_authorization(authorization)
