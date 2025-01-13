@@ -1,7 +1,22 @@
 from typing import List
 from models.alimentoComida import AlimentoComidaModel
 from models.comidaRegistro import ComidaConAlimentosModel
-from models.registroDiario import RegistroConComidasConAlimentosModel
+from models.registroDiario import RegistroConComidasConAlimentosModel, RegistroDiarioModel
+
+def serializar_registro(doc) -> RegistroDiarioModel:
+    return RegistroDiarioModel(
+        id_registro=str(doc["_id"]),
+        id_usu=doc["id_usu"],
+        fecha=doc["fecha"], 
+        peso=doc["peso"],
+        calorias=doc["calorias"],
+        proteinas=doc["proteinas"],
+        carbohidratos=doc["carbohidratos"],
+        grasas=doc["grasas"]
+    )
+
+def serializar_registros(docs) -> List[RegistroDiarioModel]:
+    return [serializar_registro(doc) for doc in docs]
 
 def serializar_registro_completo(registro,comidas,alimentos_por_comida) -> RegistroConComidasConAlimentosModel:
     comidas_serializadas = []

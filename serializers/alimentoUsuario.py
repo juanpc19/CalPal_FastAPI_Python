@@ -1,11 +1,10 @@
 from typing import List
 from models.alimentoUsuario import AlimentoUsuarioModel
 
-
 def serializar_alimento_usuario(doc) -> AlimentoUsuarioModel:
     return AlimentoUsuarioModel(
         id_alimento=str(doc["_id"]),
-        id_usu=str(doc["id_usu"]),
+        id_usu=doc["id_usu"],
         nombre=doc["nombre"],
         tipo=doc["tipo"], 
         cantidad_gramos=doc["cantidad_gramos"],

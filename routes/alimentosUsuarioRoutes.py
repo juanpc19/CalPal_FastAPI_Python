@@ -17,14 +17,18 @@ ALGORITHM=os.getenv("ALGORITHM")
 
 @alimentos_usuario_root.post("/alimentos-usuario", response_model=dict, response_description="Añade un nuevo alimento de usuario")
 async def insertar_nuevo_alimento(alimento_usuario: PostAlimentoUsuarioModel, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    token=extraer_token_header_authorization(authorization)
     try:
-        token=extraer_token_header_authorization(authorization)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_usuario = payload["sub"]  
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
     
     usuario_encontrado=await request.app.mongodb["usuarios"].find_one({"_id": ObjectId(id_usuario)})
     if not usuario_encontrado:
@@ -37,14 +41,18 @@ async def insertar_nuevo_alimento(alimento_usuario: PostAlimentoUsuarioModel, re
 
 @alimentos_usuario_root.get("/alimentos-usuario", response_model=List[AlimentoUsuarioModel], response_description="Obtiene todos los alimentos del usuario")
 async def obtener_alimentos_usuario(request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    token=extraer_token_header_authorization(authorization)
     try:
-        token=extraer_token_header_authorization(authorization)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_usuario = payload["sub"] 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
     
     usuario_encontrado=await request.app.mongodb["usuarios"].find_one({"_id": ObjectId(id_usuario)})
     if not usuario_encontrado:
@@ -59,14 +67,18 @@ async def obtener_alimentos_usuario(request: Request, authorization: str = Heade
 
 @alimentos_usuario_root.get("/alimentos-usuario/{_id}", response_model=AlimentoUsuarioModel, response_description="Obtiene alimento de usuario seleccionado")
 async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    token=extraer_token_header_authorization(authorization)
     try:
-        token=extraer_token_header_authorization(authorization)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_usuario = payload["sub"] 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
     
     usuario_encontrado=await request.app.mongodb["usuarios"].find_one({"_id": ObjectId(id_usuario)})
     if not usuario_encontrado:
@@ -81,14 +93,18 @@ async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorizat
 
 @alimentos_usuario_root.patch("/alimentos-usuario/{_id}", response_model=dict, response_description="modifica alimento de usuario seleccionado")
 async def modificar_alimento_usuario(_id: str, alimento_usuario: UpdateAlimentoUsuarioModel, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    token=extraer_token_header_authorization(authorization)    
     try:
-        token=extraer_token_header_authorization(authorization)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_usuario = payload["sub"]  
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
     
     usuario_encontrado=await request.app.mongodb["usuarios"].find_one({"_id": ObjectId(id_usuario)})
     if not usuario_encontrado:
@@ -108,14 +124,18 @@ async def modificar_alimento_usuario(_id: str, alimento_usuario: UpdateAlimentoU
      
 @alimentos_usuario_root.delete("/alimentos-usuario/{_id}", response_model=dict, response_description="Elimina alimento de usuario seleccionado")
 async def eliminar_alimento_usuario(_id: str, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
+    token=extraer_token_header_authorization(authorization)
     try:
-        token=extraer_token_header_authorization(authorization)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         id_usuario = payload["sub"]  
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El token ha expirado.")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token inválido.")
+    
+    token_encontrado = await request.app.mongodb["tokens"].find_one({"token_jwt": token})
+    if not token_encontrado:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token no encontrado.")
     
     usuario_encontrado=await request.app.mongodb["usuarios"].find_one({"_id": ObjectId(id_usuario)})
     if not usuario_encontrado:
