@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
+#model para peticiones get
 class AlimentoUsuarioModel(BaseModel):
     id_alimento: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     id_usu: str
@@ -30,6 +31,7 @@ class AlimentoUsuarioModel(BaseModel):
             }
         }
         
+#model para peticiones post
 class PostAlimentoUsuarioModel(BaseModel):
     id_usu: str
     nombre: str
@@ -55,7 +57,8 @@ class PostAlimentoUsuarioModel(BaseModel):
                 "info_adicional": "Proporciona energía rápida, mejora la digestión y ayuda a regular la presión arterial. Rico en potasio, vitamina B6, vitamina C y fibra."
             }
         }
-        
+
+#model para peticiones patch
 class UpdateAlimentoUsuarioModel(BaseModel):
     nombre: Optional[str] = None
     tipo: Optional[str] = None 

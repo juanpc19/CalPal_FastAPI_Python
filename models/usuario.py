@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Optional #para definir tipo de lista, util en model validation con pydantic
+from typing import Dict, Optional 
 
-#modelo para lectura como get
+#model para peticiones get
 class UsuarioModel(BaseModel):
     id_usuario: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     hashed_password: str
@@ -33,7 +33,7 @@ class UsuarioModel(BaseModel):
             }
         }
 
-#modelo para insercion inicial (id dada por mongodb), campos opcionales actuaran como default aqui en lugar de la app
+#model para peticiones post
 class PostUsuarioModel(BaseModel):
     hashed_password: str
     email: str
@@ -63,7 +63,7 @@ class PostUsuarioModel(BaseModel):
         }
         
         
-#modelo para updates
+#model para peticiones patch
 class UpdateUsuarioModel(BaseModel):
     objetivos: Optional[Dict[str, float]] = None
     comidas: Optional[Dict[str, int]] = None
@@ -85,7 +85,8 @@ class UpdateUsuarioModel(BaseModel):
                 "nivel_actividad": 1
             }
         }
-
+        
+#model para peticiones get parciales sobre usuario
 class UsuarioObjetivosComidasModel(BaseModel):
     objetivos: Dict[str, float]
     comidas: Dict[str, int]
@@ -107,7 +108,8 @@ class UsuarioObjetivosComidasModel(BaseModel):
         
             }
         }
-   
+
+#model para peticiones get parciales sobre usuario
 class UsuarioDatosModel(BaseModel):
     sexo: str
     altura: int

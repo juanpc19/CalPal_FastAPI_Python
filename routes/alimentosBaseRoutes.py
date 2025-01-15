@@ -15,7 +15,6 @@ async def obtener_alimentos_base(request: Request):
     
     return alimentos_base_serializados
 
-#6710f557793494a80410b0a1     para testear el by id 
 @alimentos_base_root.get("/alimentos-base/{_id}", response_model=AlimentoBaseModel, response_description="Devuelve el alimento base seleccionado")
 async def alimento_base_seleccionado(_id: str, request: Request):
      

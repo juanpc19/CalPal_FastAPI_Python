@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from contextlib import asynccontextmanager#para iniciar y cerrar cliente
-import uvicorn #para testing local
-from motor.motor_asyncio import AsyncIOMotorClient#uso este para asincronia
-#from pymongo.mongo_client import MongoClient
+from contextlib import asynccontextmanager# Para manejar la inicialización y cierre de recursos de forma asíncrona.
+import uvicorn # Herramientas para testing local
+from motor.motor_asyncio import AsyncIOMotorClient# Cliente asíncrono para MongoDB.
 from pymongo.server_api import ServerApi
 from routes.index import entry_root
 from routes.alimentosBaseRoutes import alimentos_base_root
@@ -24,7 +23,7 @@ async def lifespan(app: FastAPI):
         finally:
                 client.close()
         
-app = FastAPI(lifespan=lifespan)#la app tendra el lifespan dado por el yield de la funcion
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(entry_root)
 app.include_router(alimentos_base_root)

@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from models.alimentoComida import AlimentoComidaModel
 
+#model para peticiones get
 class ComidaRegistroModel(BaseModel):
     id_comida: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     id_reg: str
@@ -27,6 +28,7 @@ class ComidaRegistroModel(BaseModel):
             }
         }
         
+#model para peticiones post
 class PostComidaRegistroModel(BaseModel):
     id_reg: str
     orden: int
@@ -50,7 +52,7 @@ class PostComidaRegistroModel(BaseModel):
             }
         }
         
-
+#model para peticiones patch
 class UpdateComidaRegistroModel(BaseModel):
     calorias: float
     proteinas: float
@@ -67,6 +69,7 @@ class UpdateComidaRegistroModel(BaseModel):
             }
         }
             
+#model usado como parte de un modelo de registroDiario usado en peticion get         
 class ComidaConAlimentosModel(BaseModel):
     id_comida: str = Field(alias="_id")  
     id_reg: str

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+#model para peticiones get
 class AlimentoBaseModel(BaseModel):
     id_alimento: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     nombre: str

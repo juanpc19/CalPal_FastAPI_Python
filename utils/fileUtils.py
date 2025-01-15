@@ -14,28 +14,14 @@ SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM=os.getenv("ALGORITHM")
 SENDGRID_API_KEY=os.getenv("SENDGRID_API_KEY")
 
-
-#funcion que lee json
-def leerFichero(nombreFichero):
-    archivo = open(nombreFichero, "r", encoding="utf-8") 
-    objetos = json.load(archivo)
-    archivo.close()
-    return objetos
-
-#funcion que escribe un json
-def escribeFichero(nombreFichero, objetos):
-    archivo = open(nombreFichero, "w", encoding="utf-8")
-    json.dump(objetos,archivo,ensure_ascii=False,indent=4)
-    archivo.close()
-
-#funcion para hacer hash a una contraseña
+#funcion que devuelve la contraseña con el hash realizado
 def hash_password(password: str) -> str:
     password = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed_password=bcrypt.hashpw(password,salt)
     return hashed_password.decode('utf-8')
           
-#funcion para verificar contraseña descodificando el hash, devuelve true si coinciden
+#funcion para verificar contraseña decodificando el hash, devuelve true si coinciden
 def verify_password(password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
@@ -85,7 +71,7 @@ def enviar_email_verificacion(email: str, token_jwt: str):
         html_content=f"""
             <p>Haz clic en el siguiente enlace para verificar tu correo:</p>
             <p><a href='{enlace_verificacion}'>Verificar correo</a></p>
-            <p>Este enlace estará disponible durante 30 minutos.</p>
+            <p>Este enlace estará disponible durante 15 minutos.</p>
         """
     )
     
@@ -108,7 +94,7 @@ def enviar_email_cambiar_contrasena(email:str, token_jwt: str):
         html_content=f"""
             <p>Haz clic en el siguiente enlace para confirmar tu identidad y te redigiremos a la app para cambiar tu contraseña:</p>
             <p><a href='{enlace_cambio_pass}'>Cambiar contraseña</a></p>
-            <p>Este enlace estará disponible durante 30 minutos.</p>
+            <p>Este enlace estará disponible durante 15 minutos.</p>
         """
     )
     

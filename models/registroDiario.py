@@ -1,9 +1,9 @@
 from datetime import date
 from typing import List
 from pydantic import BaseModel, Field
-from models.comidaRegistro import ComidaRegistroModel, ComidaConAlimentosModel
-from models.alimentoComida import AlimentoComidaModel
+from models.comidaRegistro import ComidaConAlimentosModel
 
+#model para peticiones get
 class RegistroDiarioModel(BaseModel):
     id_registro: str = Field(alias="_id")#field para poder igualar/relacionar _id de bbdd a campo id_alimento
     id_usu: str
@@ -29,6 +29,7 @@ class RegistroDiarioModel(BaseModel):
             }
         }
         
+#model para peticiones post
 class PostRegistroDiarioModel(BaseModel):
     id_usu: str
     fecha: date
@@ -52,6 +53,7 @@ class PostRegistroDiarioModel(BaseModel):
             }
         }
         
+#model para peticiones patch
 class UpdateRegistroDiarioModel(BaseModel):
     peso: float
     calorias: float
@@ -71,7 +73,7 @@ class UpdateRegistroDiarioModel(BaseModel):
             }
         }
  
-        
+#model para peticion get de un registroDiario con sus comidas y sus alimentos anidados
 class RegistroConComidasConAlimentosModel(BaseModel):
     id_registro: str = Field(alias="_id")  # Identificador único del registro
     id_usu: str

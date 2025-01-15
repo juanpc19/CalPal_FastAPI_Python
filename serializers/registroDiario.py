@@ -44,7 +44,7 @@ def serializar_registro_completo(registro,comidas,alimentos_por_comida) -> Regis
                 )
             )
              
-        # Serializo la comida con sus alimentos a partir de lis previamente serializada
+        # Serializo la comida con sus alimentos a partir de lista previamente serializada
         comidas_serializadas.append(
             ComidaConAlimentosModel(
                 id_comida=id_comida,

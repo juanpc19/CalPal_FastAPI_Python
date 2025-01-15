@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+#model usado por funcion que creara el token se usara en peticiones post
 class TokenBasicModel(BaseModel):
     id_usu: str
     token_jwt: str 
@@ -12,6 +13,7 @@ class TokenBasicModel(BaseModel):
             }
         }
 
+#model que se usara en peticiones get
 class TokenModel(BaseModel):
     id_token: str = Field(alias="_id")
     id_usu: str

@@ -3,12 +3,12 @@ import os
 from typing import List
 from bson import ObjectId
 from dotenv import load_dotenv
-from fastapi import APIRouter, Header, Query, Request, HTTPException, status
+from fastapi import APIRouter, Header, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import jwt
 from utils.fileUtils import extraer_token_header_authorization
-from models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, UpdateRegistroDiarioModel, RegistroConComidasConAlimentosModel
+from models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, RegistroConComidasConAlimentosModel
 from models.usuario import UsuarioObjetivosComidasModel
 from models.comidaRegistro import PostComidaRegistroModel
 from models.alimentoComida import AlimentoComidaModel, PostAlimentoComidaModel
@@ -20,7 +20,7 @@ SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM=os.getenv("ALGORITHM")
 
 #endpoint que recibe un registro recien creado desde app y lo inserta en la bbdd creando sus comidas partir de datos_usuario
-@registros_diarios_root.post("/registros-diarios", response_model=dict, response_description="Inserta nuevo registro diario del usuario")
+@registros_diarios_root.post("/registros-diarios", response_model=dict, response_description="Inserta nuevo registro diario del usuario y sus comidas")
 async def nuevo_registro_diario(registro_diario: PostRegistroDiarioModel, datos_usuario: UsuarioObjetivosComidasModel, 
     request: Request, authorization: str = Header(..., description="Token JWT de verificación")):
     token=extraer_token_header_authorization(authorization)
@@ -38,15 +38,16 @@ async def nuevo_registro_diario(registro_diario: PostRegistroDiarioModel, datos_
     registro_diario_json=jsonable_encoder(registro_diario)
     ref_registro=await request.app.mongodb["registros_diarios"].insert_one(registro_diario_json)
     
-    #Registro viene de app y se puede insertar tal cual, con datos de usuario creo comidas default y las inserto
     comidas_usuario=datos_usuario.comidas
     lista_comidas=[]
     
-    for k,v in comidas_usuario.items():
+    #itero sobre las clave-valor de cada comida del usuario para crear una uneva instancia que incorpore esos datos y 
+    # la añado a la lista tras convertirla en json para su insercion en bbdd
+    for nombre_comida,orden_comida  in comidas_usuario.items():
         comida = PostComidaRegistroModel(   
         id_reg=str(ref_registro.inserted_id),
-        orden=v,
-        nombre=k,
+        orden=orden_comida,
+        nombre=nombre_comida,
         calorias=0.0,
         proteinas=0.0,
         carbohidratos=0.0,
@@ -79,11 +80,12 @@ async def actualizar_peso_registro_diario(id_registro: str, data: dict, request:
     
     resultado=await request.app.mongodb["registros_diarios"].update_one({"_id": ObjectId(id_registro)}, {"$set": {"peso": peso}})
     if resultado.modified_count == 0:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontró el registro para actualizar.")
-
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "Cambios no realizados, los datos no son diferentes."})
+        
     return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "Peso actualizado correctamente"})
 
-@registros_diarios_root.get("/registros-diarios/registro-actual", response_model=RegistroConComidasConAlimentosModel, response_description="Obtiene un registro con sus comidas asociadas y los alimentos asociados a las comidas")
+#Endpoint que obtiene el registro del dia actual con sus comidas y los alimentos asociados a las mismas con estructura anidada segun "RegistroConComidasConAlimentosModel"
+@registros_diarios_root.get("/registros-diarios/registro-actual", response_model=RegistroConComidasConAlimentosModel, response_description="Obtiene el registro del dia actual con sus comidas asociadas y los alimentos asociados a las comidas")
 async def obtener_registro_completo_actual(request: Request, authorization: str = Header(..., description="Token JWT de verificacion")):
     token=extraer_token_header_authorization(authorization)
     try:
@@ -109,7 +111,7 @@ async def obtener_registro_completo_actual(request: Request, authorization: str 
     comida_object_ids = [comida["_id"] for comida in comidas]#para consulta unica almaceno todos los ids en una lista
     
     alimentos = await request.app.mongodb["alimentos_comida"].find({"id_com": {"$in": [str(_id) for _id in comida_object_ids]}}).to_list()
-    alimentos_por_comida = {}#guardara la relacion entre comida y sus alimentos (k,v) para facilitar serializacion
+    alimentos_por_comida = {}#guardara la relacion entre comida y sus alimentos (k(id_com),v(dict con datos del alimento)) para facilitar serializacion
     for alimento in alimentos:
         alimentos_por_comida.setdefault(alimento["id_com"], []).append(alimento)
         
@@ -117,7 +119,7 @@ async def obtener_registro_completo_actual(request: Request, authorization: str 
     
     return registro_completo_model
 
-#endpoint que retorna los registros de un usuario
+#endpoint que retorna todos los registros de un usuario
 @registros_diarios_root.get("/registros-diarios", response_model=List[RegistroDiarioModel], response_description="Obtiene todos los registros de un usuario")
 async def obtener_registros_usuario(request: Request, authorization: str = Header(..., description="Token JWT de verificacion")):
     token=extraer_token_header_authorization(authorization)
@@ -168,7 +170,6 @@ async def nuevo_alimento_comida_registro(id_registro: str, id_comida: str, alime
     if not comida:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comida no encontrada.")
     
-    
     valores_incrementar = {
         "calorias": alimento_comida.calorias,
         "proteinas": alimento_comida.proteinas,
@@ -178,7 +179,7 @@ async def nuevo_alimento_comida_registro(id_registro: str, id_comida: str, alime
     
     alimento_comida_json=jsonable_encoder(alimento_comida)
     
-    # Actualizar en cascada con sesion como transaccion para asegurar actualizacion completa
+    # Actualiza en cascada con sesion como transaccion para asegurar actualizacion completa
     async with await request.app.mongodb.client.start_session() as session:
         async with session.start_transaction():
          
@@ -198,8 +199,7 @@ async def nuevo_alimento_comida_registro(id_registro: str, id_comida: str, alime
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={"mensaje": "Alimento añadido correctamente"})
 
-    
-#endpoint que Borra un alimento y actualiza valores en cascada en comidas y registro
+#endpoint que borra un alimento y actualiza valores en cascada en comidas y registro
 @registros_diarios_root.delete("/registros-diarios/{id_registro}/comidas/{id_comida}/alimentos", response_model=dict, response_description="Borra alimento y actualiza datos de comidas y registro")
 async def eliminar_alimento_comida_registro(id_registro: str, id_comida: str, alimento_comida: AlimentoComidaModel, 
     request: Request, authorization: str = Header(..., description="Token JWT de verificación")):
@@ -231,7 +231,6 @@ async def eliminar_alimento_comida_registro(id_registro: str, id_comida: str, al
     if not alimento:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alimento no encontrado.")
     
-    
     valores_decrementar = {
         "calorias": alimento_comida.calorias,
         "proteinas": alimento_comida.proteinas,
@@ -239,7 +238,7 @@ async def eliminar_alimento_comida_registro(id_registro: str, id_comida: str, al
         "grasas": alimento_comida.grasas
     }
     
-    # Actualizar en cascada con sesion como transaccion para asegurar actualizacion completa
+    # Actualiza en cascada con sesion como transaccion para asegurar actualizacion completa
     async with await request.app.mongodb.client.start_session() as session:
         async with session.start_transaction():
          

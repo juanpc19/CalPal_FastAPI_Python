@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Header, Query, Request, HTTPException, status
+from fastapi import APIRouter, Header, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from bson import ObjectId
@@ -91,7 +91,7 @@ async def obtener_alimento_usuario_por_id(_id: str, request: Request, authorizat
     
     return alimento_usuario_serializado
 
-@alimentos_usuario_root.patch("/alimentos-usuario/{_id}", response_model=dict, response_description="modifica alimento de usuario seleccionado")
+@alimentos_usuario_root.patch("/alimentos-usuario/{_id}", response_model=dict, response_description="Modifica alimento de usuario seleccionado")
 async def modificar_alimento_usuario(_id: str, alimento_usuario: UpdateAlimentoUsuarioModel, request: Request, authorization: str = Header(..., description="Token JWT para autorización")):
     token=extraer_token_header_authorization(authorization)    
     try:
@@ -147,6 +147,6 @@ async def eliminar_alimento_usuario(_id: str, request: Request, authorization: s
 
     resultado_delete=await request.app.mongodb["alimentos_usuarios"].find_one_and_delete({"_id":ObjectId(_id)})
     if not resultado_delete:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error en la eliminacion del alimento.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error en la eliminacion del alimento o eliminaicon ya realizada.")
      
     return JSONResponse(status_code=status.HTTP_200_OK, content={"mensaje": "Alimento eliminado correctamente."})
