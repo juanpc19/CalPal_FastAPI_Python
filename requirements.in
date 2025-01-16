@@ -3,10 +3,13 @@ fastapi
 pydantic
 uvicorn
 
-#Database
-motor[srv]
+# Database
+motor
 
 # Dependencias de desarrollo
-pip-tools
 python-dotenv
-pytest
+
+# Otras librerias
+jwt
+bcrypt
+sendgrid
