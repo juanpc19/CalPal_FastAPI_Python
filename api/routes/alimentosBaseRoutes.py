@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, Request, status
-from models.alimentoBase import AlimentoBaseModel
-from serializers.alimentoBase import serializar_alimentos_base, serializar_alimento_base
+from api.models.alimentoBase import AlimentoBaseModel
+from api.serializers.alimentoBase import serializar_alimentos_base, serializar_alimento_base
 from bson import ObjectId
 
 alimentos_base_root = APIRouter()

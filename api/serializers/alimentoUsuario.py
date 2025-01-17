@@ -1,5 +1,5 @@
 from typing import List
-from models.alimentoUsuario import AlimentoUsuarioModel
+from api.models.alimentoUsuario import AlimentoUsuarioModel
 
 def serializar_alimento_usuario(doc) -> AlimentoUsuarioModel:
     return AlimentoUsuarioModel(

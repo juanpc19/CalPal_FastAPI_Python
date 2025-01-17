@@ -1,4 +1,4 @@
-from models.usuario import UsuarioModel, UsuarioObjetivosComidasModel, UsuarioDatosModel
+from api.models.usuario import UsuarioModel, UsuarioObjetivosComidasModel, UsuarioDatosModel
 
 def serializar_usuario(doc) -> UsuarioModel:
     return UsuarioModel(

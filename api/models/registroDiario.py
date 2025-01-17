@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 from pydantic import BaseModel, Field
-from models.comidaRegistro import ComidaConAlimentosModel
+from api.models.comidaRegistro import ComidaConAlimentosModel
 
 #model para peticiones get
 class RegistroDiarioModel(BaseModel):

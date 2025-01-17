@@ -7,12 +7,12 @@ from fastapi import APIRouter, Header, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import jwt
-from utils.fileUtils import extraer_token_header_authorization
-from models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, RegistroConComidasConAlimentosModel
-from models.usuario import UsuarioObjetivosComidasModel
-from models.comidaRegistro import PostComidaRegistroModel
-from models.alimentoComida import AlimentoComidaModel, PostAlimentoComidaModel
-from serializers.registroDiario import serializar_registro_completo, serializar_registros
+from api.utils.fileUtils import extraer_token_header_authorization
+from api.models.registroDiario import RegistroDiarioModel, PostRegistroDiarioModel, RegistroConComidasConAlimentosModel
+from api.models.usuario import UsuarioObjetivosComidasModel
+from api.models.comidaRegistro import PostComidaRegistroModel
+from api.models.alimentoComida import AlimentoComidaModel, PostAlimentoComidaModel
+from api.serializers.registroDiario import serializar_registro_completo, serializar_registros
 
 registros_diarios_root=APIRouter()
 load_dotenv()

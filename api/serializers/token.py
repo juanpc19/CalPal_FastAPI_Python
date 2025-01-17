@@ -1,4 +1,4 @@
-from models.token import TokenModel 
+from api.models.token import TokenModel 
 
 def serializar_token(doc) -> TokenModel:
     return TokenModel(

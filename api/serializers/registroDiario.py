@@ -1,7 +1,7 @@
 from typing import List
-from models.alimentoComida import AlimentoComidaModel
-from models.comidaRegistro import ComidaConAlimentosModel
-from models.registroDiario import RegistroConComidasConAlimentosModel, RegistroDiarioModel
+from api.models.alimentoComida import AlimentoComidaModel
+from api.models.comidaRegistro import ComidaConAlimentosModel
+from api.models.registroDiario import RegistroConComidasConAlimentosModel, RegistroDiarioModel
 
 def serializar_registro(doc) -> RegistroDiarioModel:
     return RegistroDiarioModel(

@@ -3,12 +3,12 @@ from fastapi import APIRouter, Header, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from bson import ObjectId
-from models.alimentoUsuario import AlimentoUsuarioModel, PostAlimentoUsuarioModel, UpdateAlimentoUsuarioModel
+from api.models.alimentoUsuario import AlimentoUsuarioModel, PostAlimentoUsuarioModel, UpdateAlimentoUsuarioModel
 import jwt
 import os
 from dotenv import load_dotenv
-from utils.fileUtils import extraer_token_header_authorization
-from serializers.alimentoUsuario import serializar_alimento_usuario, serializar_alimentos_usuario
+from api.utils.fileUtils import extraer_token_header_authorization
+from api.serializers.alimentoUsuario import serializar_alimento_usuario, serializar_alimentos_usuario
 
 alimentos_usuario_root = APIRouter()
 load_dotenv()

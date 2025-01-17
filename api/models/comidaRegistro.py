@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel, Field
-from models.alimentoComida import AlimentoComidaModel
+from api.models.alimentoComida import AlimentoComidaModel
 
 #model para peticiones get
 class ComidaRegistroModel(BaseModel):

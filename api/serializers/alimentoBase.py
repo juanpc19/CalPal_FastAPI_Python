@@ -1,5 +1,5 @@
 from typing import List
-from models.alimentoBase import AlimentoBaseModel
+from api.models.alimentoBase import AlimentoBaseModel
 
 def serializar_alimento_base(doc) -> AlimentoBaseModel:
     return AlimentoBaseModel(

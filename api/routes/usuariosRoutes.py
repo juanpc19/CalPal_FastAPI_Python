@@ -5,10 +5,10 @@ from fastapi import APIRouter, Header, Query, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import jwt
-from models.usuario import UsuarioModel, PostUsuarioModel, UpdateUsuarioModel, UsuarioObjetivosComidasModel, UsuarioDatosModel
-from serializers.usuario import serializar_usuario, serializar_usuario_objetivos_comidas, serializar_usuario_datos
-from serializers.token import serializar_token
-from utils.fileUtils import crear_token_verificacion, crear_token_inicio_sesion, enviar_email_verificacion, enviar_email_cambiar_contrasena, hash_password, verify_password, extraer_token_header_authorization
+from api.models.usuario import UsuarioModel, PostUsuarioModel, UpdateUsuarioModel, UsuarioObjetivosComidasModel, UsuarioDatosModel
+from api.serializers.usuario import serializar_usuario, serializar_usuario_objetivos_comidas, serializar_usuario_datos
+from api.serializers.token import serializar_token
+from api.utils.fileUtils import crear_token_verificacion, crear_token_inicio_sesion, enviar_email_verificacion, enviar_email_cambiar_contrasena, hash_password, verify_password, extraer_token_header_authorization
 
 usuarios_root=APIRouter()
 load_dotenv()

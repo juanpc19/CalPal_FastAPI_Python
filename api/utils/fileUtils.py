@@ -7,7 +7,7 @@ import jwt
 import bcrypt
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from models.token import TokenBasicModel
+from api.models.token import TokenBasicModel
 
 load_dotenv()
 SECRET_KEY=os.getenv("SECRET_KEY")

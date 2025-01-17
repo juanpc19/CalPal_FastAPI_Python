@@ -3,11 +3,11 @@ from contextlib import asynccontextmanager# Para manejar la inicialización y ci
 import uvicorn # Herramientas para testing local
 from motor.motor_asyncio import AsyncIOMotorClient# Cliente asíncrono para MongoDB.
 from pymongo.server_api import ServerApi
-from routes.index import entry_root
-from routes.alimentosBaseRoutes import alimentos_base_root
-from routes.alimentosUsuarioRoutes import alimentos_usuario_root
-from routes.usuariosRoutes import usuarios_root
-from routes.registrosDiariosRoutes import registros_diarios_root
+from api.routes.index import entry_root
+from api.routes.alimentosBaseRoutes import alimentos_base_root
+from api.routes.alimentosUsuarioRoutes import alimentos_usuario_root
+from api.routes.usuariosRoutes import usuarios_root
+from api.routes.registrosDiariosRoutes import registros_diarios_root
 import os
 from dotenv import load_dotenv
 
