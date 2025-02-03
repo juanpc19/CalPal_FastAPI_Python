@@ -10,6 +10,6 @@ motor
 python-dotenv
 
 # Otras librerias
-jwt
+PyJWT
 bcrypt
 sendgrid

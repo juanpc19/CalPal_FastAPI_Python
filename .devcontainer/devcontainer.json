@@ -16,7 +16,6 @@
       }
     },
     "forwardPorts": [
-      "5678:5678"
     ],
     "workspaceMount": "source=${localWorkspaceFolder},target=/CalPal_FastAPI_Python,type=bind,consistency=delegated",
     "workspaceFolder": "/CalPal_FastAPI_Python",

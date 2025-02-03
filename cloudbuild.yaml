@@ -1,0 +1,6 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'Dockerfile.prod', '-t', 'europe-west1-docker.pkg.dev/calpal-api/calpalapi-repo/calpalapi-img:latest', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/calpal-api/calpalapi-repo/calpalapi-img:latest'] 
+  

@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: calpalapi-fastapi-service
+spec:
+  template:
+    spec:
+      containers:
+        - image: europe-west1-docker.pkg.dev/calpal-api/calpalapi-repo/calpalapi-img:latest
+          env:
+          ports:
+            - containerPort: 8080

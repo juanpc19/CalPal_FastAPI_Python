@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED True
+
+# Establecer el directorio de trabajo
+WORKDIR /CalPal_FastAPI_Python
+#para algo mas generico pero menos preciso
+#WORKDIR /usr/api/app 
+
+# Copiar y configurar dependencias
+COPY ./requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el código fuente de carpeta x.dev a carpeta x.prod 
+COPY ./api ./api
+
+# Exponer el puerto
+EXPOSE 8080
+
+# Comando para iniciar el servidor
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]

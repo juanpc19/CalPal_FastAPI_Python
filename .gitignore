@@ -8,3 +8,4 @@ models/__pycache__/
 routes/__pycache__/
 serializers/__pycache__/
 utils/__pycache__/
+env.yaml

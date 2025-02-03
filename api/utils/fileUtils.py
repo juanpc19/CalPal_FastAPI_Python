@@ -62,7 +62,8 @@ def extraer_token_header_authorization(authorization: str = Header(...)):
 #funcion para enviar email de verificacion, redirigira a app mediante implementacion de deep link
 def enviar_email_verificacion(email: str, token_jwt: str):
     
-    enlace_verificacion = f"http://127.0.0.1:8000/usuarios/verificacion?token={token_jwt}"#cambiar cuando suba API a servicio en nube   
+    #enlace_verificacion = f"http://127.0.0.1:8000/usuarios/verificacion?token={token_jwt}"#cambiar cuando suba API a servicio en nube   
+    enlace_verificacion = f"https://calpalapi-fastapi-service-zypqhfkvnq-ew.a.run.app/usuarios/verificacion?token={token_jwt}"#cambiar cuando suba API a servicio en nube   
     
     message = Mail(
         from_email="calpalfit@gmail.com", 
@@ -85,8 +86,9 @@ def enviar_email_verificacion(email: str, token_jwt: str):
 #funcion para enviar link de cambio de contraseña, redirigira a app mediante implementacion de deep link
 def enviar_email_cambiar_contrasena(email:str, token_jwt: str):
     
-    enlace_cambio_pass = f"http://127.0.0.1:8000/usuarios/redireccion-cambio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
-    
+    #enlace_cambio_pass = f"http://127.0.0.1:8000/usuarios/redireccion-cambio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
+    enlace_cambio_pass = f"https://calpalapi-fastapi-service-zypqhfkvnq-ew.a.run.app/usuarios/redireccion-cambio-contrasena?token={token_jwt}"#cambiar cuando suba API a servicio en nube
+
     message = Mail(
         from_email="calpalfit@gmail.com", 
         to_emails=email,
